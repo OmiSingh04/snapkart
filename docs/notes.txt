@@ -1,0 +1,10 @@
+TO DO - 
+
+	nav-bar search for products
+	user auth - for all requests
+	login/registration
+	
+	update user info
+
+
+	admin pages

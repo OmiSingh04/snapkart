@@ -1,0 +1,24 @@
+<%- include('header'); %>
+
+    <div class="d-flex flex-row">
+        <div>
+            <img class="m-5" src="<%= product.image %>" alt="Error!" style="width: 400px;">   
+        </div>
+
+        <div class="m-5">
+            <h2><%= product.title %></h2>
+            <h5>₹<%= product.price %></h5>
+            <h5><%= product.rating.rate %> / 5 Stars</h5>
+            <h5 class="mb-5"><%= product.rating.count %> Reviews</h5>
+            
+            <p><%= product.description %></p>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-secondary mx-5 mt-5 w-50 mx-auto btn-lg" type="button">Add to Cart</button>
+                <button class="btn btn-secondary mx-5 w-50 mx-auto btn-lg" type="button">Buy Now</button>
+            </div>
+
+        </div>
+    </div>
+
+<%- include('footer'); %>

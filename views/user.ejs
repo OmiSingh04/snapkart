@@ -1,0 +1,111 @@
+<%- include('header'); %>
+
+<style>
+    #details{
+        font-size :x-large;
+    }
+</style>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-2">
+            <ul class="mt-4 list-unstyled">
+                <li class="border border-3 rounded">
+                    <a onclick="">
+                        <div>
+                            <h5>Account Information</h5>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+
+
+        <div class="col-9" id="details">
+
+            <form action="/update_user" method="POST">
+
+                <input type="hidden" name="_id" value="<%= user_details._id %>">
+                
+
+                <div class="m-4">
+                    <input type="hidden" id="lat" name="geolocation[lat]" value="<%= user_details.address.geolocation.lat %>">
+                </div>
+
+                <div class="m-4">
+                    <input type="hidden" id="long" name="geolocation[long]" value="<%= user_details.address.geolocation.long %>">
+                </div>
+
+
+
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="m-4">
+                            <label for="city"><h3>City:</h3></label>
+                            <input type="text" id="city" name="address[city]" value="<%= user_details.address.city %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="street"><h3>Street:</h3></label>
+                            <input type="text" id="street" name="address[street]" value="<%= user_details.address.street %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="number"><h3>Number:</h3></label>
+                            <input type="text" id="number" name="address[number]" value="<%= user_details.address.number %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="zipcode"><h3>Zipcode:</h3></label>
+                            <input type="text" id="zipcode" name="address[zipcode]" value="<%= user_details.address.zipcode %>">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="m-4">
+                            <input type="hidden" id="id" name="id" value="<%= user_details.id %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="email"><h3>Email:</h3></label>
+                            <input type="text" id="email" name="email" value="<%= user_details.email %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="username"><h3>Username:</h3></label>
+                            <input type="text" id="username" name="username" value="<%= user_details.username %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="password"><h3>Password:</h3></label>
+                            <input type="password" id="password" name="password" value="<%= user_details.password %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="firstname"><h3>First Name:</h3></label>
+                            <input type="text" id="firstname" name="name[firstname]" value="<%= user_details.name.firstname %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="lastname"><h3>Last Name:</h3></label>
+                            <input type="text" id="lastname" name="name[lastname]" value="<%= user_details.name.lastname %>">
+                        </div>
+                        <div class="m-4">
+                            <label for="phone"><h3>Phone:</h3></label>
+                            <input type="text" id="phone" name="phone" value="<%= user_details.phone %>">
+                        </div>
+                        <input type="hidden" name="__v" value="<%= user_details.__v %>">
+                    </div>
+                </div>
+
+                <input type="submit" value="Update Information">
+                 <!-- class="bg-secondary border border-3 border-rounded"> -->
+
+            </form>
+
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+<%- include('footer'); %>

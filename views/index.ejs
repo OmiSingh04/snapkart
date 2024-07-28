@@ -1,0 +1,31 @@
+<%- include('header'); %>
+    <div class="mx-5">
+        <h1 class="mt-4 mb-5">Welcome!</h1>
+
+            <% categories.forEach(function(category){ %>
+                <div id="items_container">
+                        <h3 class="text-capitalize"> <%= category.category %> </h3>
+                        <div class="my-5 row">
+                            <% category.category_products.forEach((c) => { %>
+                                <% console.log(c.id) %>
+                                <div class="hovereffect col">
+                                    <a href="/product?id=<%= c.prod_id %>">
+                                        <img src="<%= c.image %>" alt="01" style="width: 250px;" class="img-responsive">
+                                    </a>
+                                    <!-- <div class="overlay"> -->
+                                        <a href="/product?id=<%= c.prod_id %>" class="text-decoration-none text-reset">
+                                            <h4><%= c.title %></h4>
+                                        </a>
+                                        <p><%= c.rating.rate %>/5.</p>
+                                        <p><%= c.rating.count %> reviews.</p>
+                                        <p>₹<%= c.price %></p>
+                                    <!-- </div> -->
+                                </div>
+                            <% }) %>
+                        </div>
+
+                </div>
+            <% }); %>
+    </div>
+
+<%- include('footer'); %>
