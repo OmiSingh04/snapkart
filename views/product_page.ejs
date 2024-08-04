@@ -1,4 +1,4 @@
-<%- include('header'); %>
+<%- include('header', {user : user}); %>
 
     <div class="d-flex flex-row">
         <div>
@@ -14,11 +14,58 @@
             <p><%= product.description %></p>
 
             <div class="d-grid gap-2">
-                <button class="btn btn-secondary mx-5 mt-5 w-50 mx-auto btn-lg" type="button">Add to Cart</button>
+                <% console.log("****************************************************") %>
+                <%= console.log(product) %>
+                <% console.log("****************************************************") %>
+                <% if(!user || (!(cart_list.map((element) => element.product.prod_id).includes(product.prod_id)))) { %>
+                    <button class="btn btn-secondary mx-5 mt-5 w-50 mx-auto btn-lg" type="button">Add to Cart</button>
+                <% } else { %>
+                     <div class="d-flex align-items-center mx-auto">
+                        <input type="button" onclick="update('<%= product.prod_id %>', '<%= user_id %>', '<%= cart_list.filter((e) => e.product.prod_id === product.prod_id)[0].quantity %>', 1)" value="+" class="btn btn-secondary mx-2">
+                        <h6 id="q_prod_id_<%= product.prod_id %>"><%= cart_list.filter((e) => e.product.prod_id === product.prod_id)[0].quantity %></h6>
+                        <input type="button" onclick="update('<%= product.prod_id %>', '<%= user_id %>', '<%= cart_list.filter((e) => e.product.prod_id === product.prod_id)[0].quantity %>', -1)" value="-" class="btn btn-secondary mx-2">
+                     </div>
+                <% } %>
                 <button class="btn btn-secondary mx-5 w-50 mx-auto btn-lg" type="button">Buy Now</button>
             </div>
 
         </div>
     </div>
+
+    <script>
+
+        function addToCart(prod_id, user_id){
+            
+        }
+
+        function update(prod_id, user_id, quantity, update) {
+            quantity = Number(quantity) + Number(update)
+            req_body = {   
+                user_id: user_id,
+                prod_id: prod_id,
+                new_quantity : quantity
+            }
+            console.log(JSON.stringify(req_body))
+            fetch('/update_cart',  {
+                method: "POST",
+                body:JSON.stringify(req_body),
+                headers: {
+                    "Content-Type" : "application/json"
+                }
+            }).then(
+                (res) => {
+                    if(res.status === 200){
+                        let id = "q_prod_id_" + prod_id
+                        document.getElementById(id).innerText = Number(document.getElementById(id).innerText) + Number(update)
+                        console.log("success")
+                        window.location.reload()
+                    }
+                    else{
+                        console.log("no bro")
+                    }
+                }
+            )
+        }
+    </script>
 
 <%- include('footer'); %>

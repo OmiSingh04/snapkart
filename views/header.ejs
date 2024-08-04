@@ -7,13 +7,22 @@
     <link href="/styles/nav.css" rel="stylesheet">
     <title>Snapkart</title>
 </head>
-<body>
+
+<style>
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+<body onload="initData()">
 
     <!-- start-->
 
     <nav class="navbar navbar-expand-lg navbar-dark position-relative text-bg-dark p-3">
         <div class="container-fluid">
-            <a class="navbar-brand fs-2" href="/">Snapkart</a>
+            <a class="navbar-brand fs-2" href="/">SnapKart</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -26,16 +35,116 @@
                         <a class="nav-link active px-3 fs-4" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 fs-4" href="/">Cart</a>
+                        <a class="nav-link px-3 fs-4" href="/cart">Cart</a>
                     </li>
                 </ul>
 
-                <form class="d-flex justify-content-between position-absolute top-50 start-50 translate-middle" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                <form class="d-flex flex-column justify-content-between position-absolute top-50 start-50 translate-middle" method="POST" action="/search" role="search">
+                    <div class="input-group">
+                        <input id="search-input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" oninput="filterResults()">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </div>
+                    <div id="dropdown" class="dropdown-menu mt-5 w-100" style="display: none;">
+                        <ul id="results-list" class="list-group"></ul>
+                    </div>
                 </form>
 
+                <div class="ms-auto">
+                    <% if (user) { %>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <%= user.firstname %> <%= user.lastname %>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/user">Account</a></li>
+                                <li class="dropdown-item">
+                                    <form id="logoutForm" action="/logout" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline" style="text-decoration: none; color: inherit;">Log Out</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    <% } else { %>
+                        <a class="btn btn-outline-light" href="/login">Sign In</a>
+                    <% } %>
+                </div>
             </div>
         </div>
+
+        <script>
+
+            let data = null;
+            function initData(){
+                console.log("INITING DATA")
+                //fetch from db
+                fetch("/get_all_products").then(
+                    (res) => res.json()
+                ).then(
+                    (values) => {
+                        data = values.map(({prod_id, title, image}) => {
+                            return {id : prod_id, title, image}
+                        })
+                    }
+                )
+            }
+            function filterResults() {
+                const input = document.getElementById('search-input').value;
+                const dropdown = document.getElementById('dropdown');
+                const resultsList = document.getElementById('results-list');
+                
+                // Dummy data for demonstration
+                const results = data.filter(item => item.title.toLowerCase().includes(input.toLowerCase()));
+    
+                console.log(results)
+
+                resultsList.innerHTML = '';
+                if (input && results.length > 0) {
+                    results.forEach(result => {
+                    const a = document.createElement('a');
+                    a.setAttribute("href", "/product?id=" + result.id)
+                    a.classList.add("text-decoration-none", "text-reset")
+
+                    console.log("/product?id=" + result.id);
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+
+                    const containerDiv = document.createElement('div');
+                    containerDiv.className = 'container';
+
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'row';
+
+                    const colImgDiv = document.createElement('div');
+                    colImgDiv.className = 'col';
+
+                    const img = document.createElement('img');
+                    img.src = result.image;
+                    img.style.height = '70px';
+                    img.style.objectFit = 'cover';
+                    colImgDiv.appendChild(img);
+
+                    const colTextDiv = document.createElement('div');
+                    colTextDiv.className = 'col';
+
+                    const p = document.createElement('h6');
+                    p.textContent = result.title;
+                    colTextDiv.appendChild(p);
+                    // p.classList.add('text-truncate truncate')
+
+                    rowDiv.appendChild(colImgDiv);
+                    rowDiv.appendChild(colTextDiv);
+                    containerDiv.appendChild(rowDiv);
+                    a.appendChild(containerDiv)
+                    li.appendChild(a);
+                    resultsList.appendChild(li);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            }
+        </script>
+
+
     </nav>
 

@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "node_modules\\.bin\\nodemon server.js"
+    "test": "node_modules\\.bin\\nodemon server.js -e ejs,js,json,txt"
   },
+
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "connect-sqlite3": "^0.9.15",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "express-session": "^1.18.0",
     "mongodb": "^6.8.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4",

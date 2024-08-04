@@ -1,24 +1,50 @@
 //all required crud operations are here
-async function list_databases(client){
+const {MongoClient} = require('mongodb')
+const client = new MongoClient("mongodb://localhost:27017/")
+
+async function init(){
+    try{
+        await client.connect()
+        await list_databases()
+        return true;
+    } catch(e){
+        console.log(e)
+        return false;
+    }
+}
+
+async function list_databases(){
     databasesList = await client.db().admin().listDatabases();
     console.log("Databases:");
     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 }
 
-async function get_product_details(client, id){
+
+async function get_product_details(id){
     //get the product details from the id   
     let result = await client.db("snapkart").collection("products").findOne({prod_id : id})
     return result
 }
 
-async function get_user_details(client, id){
+async function get_all_products(){
+    //get the product details from the id   
+    let result = await client.db("snapkart").collection("products").find({}).toArray();
+    return result
+}
+
+async function get_user_details(id){
     id = Number(id)
     //get the product details from the id   
     let result = await client.db("snapkart").collection("users").findOne({id : id})
     return result
 }
 
-async function update_user(client, body){
+async function get_user_by_name(username){
+    let result = await client.db("snapkart").collection("users").findOne({username : username})
+    return result
+}
+
+async function update_user(body){
 
     console.log(body)
 
@@ -46,9 +72,7 @@ async function update_user(client, body){
     body = {
         $set : body
     }
-    console.log("HEY IM IN")
     console.log(body)
-    console.log("HEY IM IN")
     let status = 404
     try{
         let result = await client.db("snapkart").collection("user").findOneAndUpdate(filter, body, { returnDocument: 'after' })
@@ -65,7 +89,7 @@ async function update_user(client, body){
     return status
 }
 
-async function get_products_by_category(client, category){
+async function get_products_by_category(category){
     //get details of all products in this category
     const result = await client.db("snapkart").collection("products").find(
         {
@@ -75,7 +99,7 @@ async function get_products_by_category(client, category){
     return result
 }
 
-async function get_categories(client){
+async function get_categories(){
     //get a list of all available categories
     const result = await client.db("snapkart").collection("categories").find().toArray()
     return result.map(
@@ -83,28 +107,48 @@ async function get_categories(client){
     )
 }
 
-async function get_products_by_categories(client, categories){
-
+async function get_products_by_categories(categories){
     let result = []
     for(let category of categories){
-        let res = await get_products_by_category(client, category)
+        let res = await get_products_by_category(category)
         result.push({category: category, category_products : res})
     }
-
+    console.log(result)
     return result
 }
 
 
-async function get_cart_by_userid(client, user_id){
+async function get_cart_by_userid(user_id){
     let result = await client.db("snapkart").collection('carts').findOne({userId : user_id})
+    console.log(result)
     let ret = []
     for(let i of result.products){
-        ret.push({product: await get_product_details(client, i.productId), quantity : i.quantity})
+        ret.push({product: await get_product_details(i.productId), quantity : i.quantity})
     }
     return ret
 }
 
-async function update_cart(client, user_id, prod_id, new_quantity){
+
+async function add_to_cart(user_id, prod_id){
+    try {
+        const cart = await Cart.findOneAndUpdate(
+            { userId }, // Filter: Find the cart with the given userId
+            {
+                $push: {
+                    products: { productId, quantity: 1 }
+                }
+            },
+            { new: true, upsert: true } // Options: Return updated document, create if not found
+    );
+    return cart;
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    return error;
+  }
+}
+
+
+async function update_cart(user_id, prod_id, new_quantity){
     user_id = Number(user_id)
     prod_id = Number(prod_id)
     new_quantity = Number(new_quantity)
@@ -112,8 +156,16 @@ async function update_cart(client, user_id, prod_id, new_quantity){
         userId: user_id,
         'products.productId': prod_id
     };
-    const update = { 
-        $set: { 'products.$.quantity': new_quantity }
+    let update;
+    if(new_quantity === 0){ 
+        update = {
+            $pull: {products:{productId: prod_id}}  
+        }
+    }
+    else{
+        update = {
+            $set: { 'products.$.quantity': new_quantity }
+        }
     };
 
     // update = {quantity : new_quantity}
@@ -140,8 +192,4 @@ async function update_cart(client, user_id, prod_id, new_quantity){
     return status
 }
 
-
-
-
-
-module.exports = {list_databases, get_product_details, get_products_by_category, get_categories, get_products_by_categories, get_cart_by_userid, update_cart, get_user_details, update_user}
+module.exports = {list_databases, get_product_details, get_products_by_category, get_categories, get_products_by_categories, get_cart_by_userid, update_cart, get_user_details, update_user, get_user_by_name, init, get_all_products, add_to_cart}

@@ -1,10 +1,4 @@
 TO DO - 
-
-	nav-bar search for products
-	user auth - for all requests
-	login/registration
-	
-	update user info
-
-
-	admin pages
+	updating user information - mongoose 
+	product_page - if signed in and in cart, show quantity
+	buy page? just put a cash on delivery option - (if time permits)
